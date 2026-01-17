@@ -74,7 +74,7 @@ const Login = () => {
       });
     } else {
       setFormData({
-        email: 'dipikamatke@ltce.in',
+        email: 'dipika_matke@ltce.in',
         password: 'Teacher123'
       });
     }
@@ -138,19 +138,19 @@ const Login = () => {
             )}
             
             {/* Email Input */}
-            <div>
-              <label className="block text-sm sm:text-base font-bold text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                required
-              />
-            </div>
+           <div>
+            <label className="block text-sm sm:text-base font-bold text-gray-700 mb-2">
+             {activeTab === 'student' ? 'Roll Number' : 'Email Address'}
+            </label>
+            <input
+                 type={activeTab === 'student' ? 'text' : 'email'}
+                 name="email"
+                 value={formData.email}
+                 onChange={handleInputChange}
+                 className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                 required
+            />
+           </div>
 
             {/* Password Input */}
             <div>

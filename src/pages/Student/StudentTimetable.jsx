@@ -67,7 +67,7 @@ function StudentTimetable() {
       { lecture: 1, start: 9 * 60 + 30, end: 10 * 60 + 30 }, // 9:30-10:30
       { lecture: 2, start: 10 * 60 + 30, end: 11 * 60 + 30 }, // 10:30-11:30
       { lecture: 3, start: 11 * 60 + 30, end: 12 * 60 + 30 }, // 11:30-12:30
-      { lecture: 4, start: 12 * 60 + 30, end: 13 * 60 + 30 }, // 12:30-1:30
+      { lecture: 4, start: 12 * 60 + 30, end: 13 * 60  }, // 12:30-1:00
       { lecture: 5, start: 13 * 60, end: 14 * 60 }, // 1:00-2:00
       { lecture: 6, start: 14 * 60, end: 15 * 60 }, // 2:00-3:00
       { lecture: 7, start: 15 * 60, end: 16 * 60 }, // 3:00-4:00
