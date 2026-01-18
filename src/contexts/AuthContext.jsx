@@ -18,38 +18,22 @@ export const AuthProvider = ({ children }) => {
 
   // Validate session (called on app load)
   useEffect(() => {
-    setTimeout(validateSession, 0);
-  }, []);
+  validateSession();
+}, []);
 
  const validateSession = async () => {
   try {
+    setLoading(true);
     const res = await api.get("/auth/validateUser");
-   
-    if (res.data?.success && res.data.user) {
-     
+
+    if (res.data?.success) {
       setUser(res.data.user);
-      return true;
+    } else {
+      setUser(null);
     }
-    throw new Error("Invalid session");
   } catch (error) {
-    console.error("Session validation failed:", error);
-    if (error.response?.status === 401) {
-      try {
-        const refreshed = await refreshSession();
-        if (refreshed) {
-          // Retry validation after refresh
-          const retry = await api.get("/auth/validateUser");
-          if (retry.data?.success && retry.data.user) {
-            setUser(retry.data.user);
-            return true;
-          }
-        }
-      } catch (refreshError) {
-        console.error("Refresh failed:", refreshError);
-      }
-    }
+    // ❌ DO NOT refresh here
     setUser(null);
-    return false;
   } finally {
     setLoading(false);
   }

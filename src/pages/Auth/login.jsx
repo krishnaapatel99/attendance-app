@@ -175,13 +175,7 @@ const Login = () => {
               >
                 Forgot password?
               </button>
-              <button 
-                type="button" 
-                onClick={fillDemoCredentials}
-                className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline transition-colors"
-              >
-                Fill Demo Credentials
-              </button>
+            
             </div>
 
             {/* Submit Button */}

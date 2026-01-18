@@ -17,7 +17,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
 console.log(user)
-  // Still checking session (validateUser + refresh if needed)
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
