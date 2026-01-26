@@ -88,7 +88,7 @@ function TeacherHome() {
 
                         {/* Explore Students Card - Fixed large screen size applied with 'lg:' prefix */}
                         <Link 
-                            to="/teacher/attendance" 
+                            to="/teacher/view-students" 
                             className="flex items-center gap-4 w-full lg:w-[450px] lg:h-[140px] h-auto rounded-xl sm:rounded-2xl bg-white p-4 shadow-[6px_6px_20px_rgba(0,0,0,0.55)] hover:shadow-xl transition-shadow"
                         >
                             <Users size={24} className="text-blue-600 flex-shrink-0" />

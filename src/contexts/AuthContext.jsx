@@ -50,9 +50,9 @@ export const AuthProvider = ({ children }) => {
   }
 };
   // Login (backend sets httpOnly cookie)
-  const login = async (email, password) => {
+  const login = async (email, password, role) => {
     try {
-      const res = await api.post("/auth/signIn", { email, password });
+      const res = await api.post("/auth/signIn", { email, password, role });
       if (res.data?.success) {
         setUser(res.data.user);
         return { success: true, user: res.data.user };

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { EyeOff, Eye } from 'lucide-react';
 
 const Login = () => {
   const [activeTab, setActiveTab] = useState('student');
+  const [showPassword, setShowPassword]= useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -14,7 +16,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Reset form data when the active tab changes (optional but good UX)
+ 
   useEffect(() => {
     setFormData({
         email: '',
@@ -37,20 +39,21 @@ const Login = () => {
     setError('');
 
     try {
-      // NOTE: Your current logic doesn't explicitly check the activeTab
-      // for the login request, but relies on the server to check credentials
-      // and return the role. This is fine, but if 'login' needs the role, 
-      // you'd pass 'activeTab' here: await login(..., activeTab).
-      const result = await login(formData.email, formData.password);
+
+      const result = await login(formData.email, formData.password, activeTab );
       
       if (result.success) {
-        // Redirect based on user role returned from the server
+        
         if (result.user.role === 'teacher') {
           navigate('/teacher');
         } else if (result.user.role === 'student') {
-          navigate('/student');
+          if(!result.user.email_verified) {
+            navigate('/email');
+          } else {
+            navigate('/student');
+          }
         } else {
-            // Handle unexpected role
+     
             setError('Login successful, but user role is unknown.');
             setLoading(false);
         }
@@ -65,20 +68,7 @@ const Login = () => {
     }
   };
 
-  // Fill demo credentials
-  const fillDemoCredentials = () => {
-    if (activeTab === 'student') {
-      setFormData({
-        email: 'krishnapatel_comp_2024@ltce.in',
-        password: 'Password123'
-      });
-    } else {
-      setFormData({
-        email: 'dipika_matke@ltce.in',
-        password: 'Teacher123'
-      });
-    }
-  };
+
 
   return (
     <div className="min-h-screen bg-gray-200 flex flex-col">
@@ -153,18 +143,32 @@ const Login = () => {
            </div>
 
             {/* Password Input */}
-            <div>
+            <div className="relative">
               <label className="block text-sm sm:text-base font-bold text-gray-700 mb-2">
                 Password
               </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full  px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-2"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? (
+                    <Eye size={22} className="text-gray-500" />
+                  ) : (
+                    <EyeOff size={22} className="text-gray-500" />
+                  )}
+                </button>
+              </div>
+             
             </div>
 
             {/* Forgot/Demo Buttons */}
