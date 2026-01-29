@@ -95,7 +95,7 @@ function TeacherHome() {
                             <div>
                                 <span className="text-xl sm:text-2xl text-gray-800 font-semibold block">Explore Students</span>
                                 <span className="text-gray-600 text-sm sm:text-lg">
-                                    {dashboardData?.totalStudents || 0} students under your subjects
+                                    students under your subjects
                                 </span>
                             </div>
                         </Link>

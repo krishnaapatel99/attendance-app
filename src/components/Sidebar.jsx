@@ -48,7 +48,7 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </Link>
         <Link
           to="/teacher/announcement"
-          className="bg-[#2C397f] w-[210]font-medium hover:bg-[#192048] text-center rounded-lg text-white py-3 active:scale-95 duration-200"
+          className="bg-[#2C397f] w-[210] font-medium hover:bg-[#192048] text-center rounded-lg text-white py-3 active:scale-95 duration-200"
         >
           Announcement
         </Link>

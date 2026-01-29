@@ -363,48 +363,57 @@ const attendanceMap = useMemo(() => {
             }`}
           >
             {/* TABLE */}
-            <div className={`${selectedStudent ? 'lg:col-span-2' : ''} bg-white p-4 rounded shadow`}>
+            <div className={`${selectedStudent ? 'lg:col-span-2' : ''} bg-white rounded-lg p-4 sm:p-6 shadow-sm`}>
               {loadingStudents ? <p>Loading…</p> : (
-                <table className="w-full">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="py-2 text-left">Roll</th>
-                      <th className="py-2 text-left">Name</th>
-                      <th className="py-2 text-left">%</th>
-                      <th className="py-2 text-left">Remark</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {students.map(s => (
-                      <React.Fragment key={s.student_rollno}>
-                        <tr
-                          onClick={() => toggleCalendar(s)}
-                          className={`cursor-pointer hover:bg-gray-50 ${
-                            selectedStudent?.student_rollno === s.student_rollno ? 'bg-blue-50' : ''
-                          }`}
-                        >
-                          <td className="py-2">{s.student_rollno}</td>
-                          <td className="py-2">{s.name}</td>
-                          <td className="py-2 font-semibold">
-                            {s.attendance_percentage}%
-                          </td>
-                          <td className="py-2 font-semibold">
-                           <button 
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               handleOpenEmailModal(s);
-                             }} 
-                             className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition-colors"
-                           >
-                             Send
-                           </button>
-                          </td>
-                        </tr>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-base sm:text-lg">
+                          Roll No.
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-base sm:text-lg">
+                          Student Name
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-base sm:text-lg">
+                          Attendance %
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-700 text-base sm:text-lg">
+                          Remark
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {students.map(s => (
+                        <React.Fragment key={s.student_rollno}>
+                          <tr
+                            onClick={() => toggleCalendar(s)}
+                            className={`cursor-pointer hover:bg-gray-50 border-b border-gray-100 ${
+                              selectedStudent?.student_rollno === s.student_rollno ? 'bg-blue-50' : ''
+                            }`}
+                          >
+                            <td className="py-3 px-4 text-base sm:text-lg">{s.student_rollno}</td>
+                            <td className="py-3 px-4 text-base sm:text-lg">{s.name}</td>
+                            <td className="py-3 px-4 text-base sm:text-lg font-semibold">
+                              {s.attendance_percentage}%
+                            </td>
+                            <td className="py-3 px-4">
+                             <button 
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 handleOpenEmailModal(s);
+                               }} 
+                               className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition-colors"
+                             >
+                               Send
+                             </button>
+                            </td>
+                          </tr>
 
                         {/* MOBILE CALENDAR */}
                        {selectedStudent?.student_rollno === s.student_rollno && (
   <tr className="lg:hidden">
-    <td colSpan="3" className="p-3 bg-gray-50 space-y-4">
+    <td colSpan="4" className="p-3 bg-gray-50 space-y-4">
 
       {/* Calendar */}
       {loadingCalendar ? (
@@ -439,6 +448,7 @@ const attendanceMap = useMemo(() => {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
 

@@ -7,7 +7,7 @@ const Announcements = () => {
     const dummyAnnouncements = [
         {
             id: 1,
-            teacher: "Dr. Smita Attarde",
+            class: "SEA Comps-A",
             date: "Jul 15",
             message: "Hello Students For SEA. Note down the AOA notebook checking schedule for the entire semester. All should bring your notebook in the given time slot for checkingBatch A1 - Friday - 11.00 am to 11.30 amBatch A2 - Wednesday - 12.00 pm to 12.30 pmBatch A3 - Wednesday - 12.00 pm to 12.30 pm;"
         }
@@ -28,7 +28,7 @@ const Announcements = () => {
                         </div>
                         
                         <div>
-                            <span className="font-bold text-gray-900 block">{announcement.teacher}</span>
+                            <span className="font-bold text-gray-900 block">{announcement.class}</span>
                             <span className="text-sm text-gray-500">{announcement.date}</span>
                         </div>
                     </div>

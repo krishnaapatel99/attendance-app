@@ -344,8 +344,8 @@ const submitUpdatedAttendance = async () => {
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content */}
-        <div className="flex-1 mt-8 px-4 md:ml-8 md:mr-8 space-y-4">
-          <div className="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div className="flex-1 mt-2  md:ml-8 md:mr-8 space-y-4">
+          <div className="bg-white rounded-lg p-2 sm:p-6 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
                <h1 className="text-2xl sm:text-2xl lg:text-3xl font-bold text-black">
@@ -396,7 +396,7 @@ const submitUpdatedAttendance = async () => {
                 <div className="flex gap-2">
                   <span className="text-green-600 font-medium">Present: {presentCount}</span>
                   <span className="text-red-600 font-medium">Absent: {absentCount}</span>
-                  <span className="text-yellow-600 font-medium">Late: {lateCount}</span>
+                 
                 </div>
                 <p className="text-gray-700 font-medium text-base sm:text-lg">
                   Total {filteredStudents.length} 
@@ -407,22 +407,25 @@ const submitUpdatedAttendance = async () => {
                     placeholder="Search by name or roll number..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-3 sm:px-4 py-2 border border-gray-300 w-full sm:w-[300px] lg:w-[350px] lg:h-[40px] rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg lg:border-2 lg:border-blue-300"
+                    className="px-3 sm:px-4 py-2 border border-gray-300 w-full sm:w-[300px] lg:w-[300px] lg:h-[40px] rounded-lg lg:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg lg:border-2 lg:border-blue-300"
                   />
-                <button 
+                <div className="flex flex-col gap-2">
+                  <button 
   onClick={saveAllAttendance}
   disabled={saving || submittedTimetables[selectedTimetable]}
   className="bg-blue-600 flex items-center justify-center text-white px-4 sm:px-6 lg:px-8 py-2 lg:py-2.5 rounded-lg lg:rounded-xl hover:bg-blue-700 transition-colors active:scale-95 duration-200 cursor-pointer text-base sm:text-lg w-full sm:w-auto lg:h-[40px] lg:font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 >
   {saving ? 'Saving...' : submittedTimetables[selectedTimetable] ? 'Submitted' : 'Save '}
                  </button>
-                 {submittedTimetables[selectedTimetable] && (
+                   {submittedTimetables[selectedTimetable] && (
                   <button
                     onClick={openUpdateModal}
                     className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
                       >Update 
                     </button>
                      )}
+                </div>
+               
 
                 </div>
               </div>
@@ -460,9 +463,7 @@ const submitUpdatedAttendance = async () => {
                     <th className="text-left py-3 px-4 font-medium text-gray-700 text-base sm:text-lg">
                       Actions
                     </th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-700 text-base sm:text-lg hidden lg:table-cell">
-                      Class
-                    </th>
+                    
                   </tr>
                 </thead>
                 <tbody>
@@ -481,7 +482,7 @@ const submitUpdatedAttendance = async () => {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex flex-col gap-1 sm:flex-row sm:gap-2">
-                            {["Present", "Late", "Absent"].map((type) => (
+                            {["Present", "Absent"].map((type) => (
                               <button
                                 key={type}
                                 onClick={() => markAttendance(student.student_rollno, type)}
@@ -495,9 +496,7 @@ const submitUpdatedAttendance = async () => {
                             ))}
                           </div>
                         </td>
-                        <td className="py-3 px-4 hidden lg:table-cell text-base sm:text-lg">
-                          {student.class} {student.div}
-                        </td>
+                      
                       </tr>
                     );
                   })}
