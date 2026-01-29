@@ -16,67 +16,82 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Validate session (called on app load)
+  // =========================
+  // Validate session on load
+  // =========================
   useEffect(() => {
-  validateSession();
-}, []);
+    validateSession();
+  }, []);
 
- const validateSession = async () => {
-  try {
-    setLoading(true);
-    const res = await api.get("/auth/validateUser");
+  const validateSession = async () => {
+    try {
+      const res = await api.get("/auth/validateUser");
 
-    if (res.data?.success) {
-      setUser(res.data.user);
-    } else {
-      setUser(null);
+      if (res.data?.success) {
+        setUser(res.data.user);
+      }
+      // ❗ IMPORTANT:
+      // If validateUser fails, DO NOTHING.
+      // Let axios interceptor + routing decide.
+    } catch (error) {
+      console.warn("Session validation failed (non-fatal)");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    // ❌ DO NOT refresh here
-    setUser(null);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-  // Refresh access token using backend refresh endpoint
- const refreshSession = async () => {
-  try {
-    const res = await api.post("/auth/refresh", {}, { withCredentials: true });
-    return res.data?.success || false;
-  } catch (error) {
-    console.error("Refresh token failed:", error);
-    return false;
-  }
-};
-  // Login (backend sets httpOnly cookie)
+  // =========================
+  // Login
+  // =========================
   const login = async (email, password, role) => {
     try {
-      const res = await api.post("/auth/signIn", { email, password, role });
+      const res = await api.post("/auth/signIn", {
+        email,
+        password,
+        role,
+      });
+
       if (res.data?.success) {
         setUser(res.data.user);
         return { success: true, user: res.data.user };
       }
-      return { success: false, message: res.data?.message || "Login failed" };
+
+      return {
+        success: false,
+        message: res.data?.message || "Login failed",
+      };
     } catch (error) {
-      return { success: false, message: error.response?.data?.message || "Login failed" };
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Login failed",
+      };
     }
   };
 
-  // Logout (backend clears cookie + local state)
+  // =========================
+  // Logout
+  // =========================
   const logout = async () => {
     try {
       await api.post("/auth/signOut");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
-      setUser(null); // reset user state immediately
-      window.location.href = "/signin"; // optional redirect to login
+      setUser(null);
+      // Let router handle redirect
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, refreshSession }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
+import {LogOut} from 'lucide-react'
 import {ToastContainer, toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Typography, Container, CircularProgress } from '@mui/material';
+import { useAuth } from '../../contexts/AuthContext'
 import api from '../../utils/api';
 
 const EmailVerification = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const {logout } = useAuth();
+
+   const handleLogout = async () => {
+    await logout();
+    navigate('/signin');
+  };
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -106,8 +114,16 @@ const handleGoogleSignIn = () => {
               draggable
               pauseOnHover
             />
-<div className='px-4 py-4 md:px-8'>
-  <img src="Upashit_logo.png" alt="Upashit Logo" className="h-12 w-auto object-contain sm:h-12" /></div>
+<div className='px-4 py-4 md:px-8 flex items-center justify-between'>
+  <img src="Upashit_logo.png" alt="Upashit Logo" className="h-12 w-auto object-contain sm:h-12" />
+    <button
+                onClick={handleLogout}
+                className=" flex items-center gap-2 px-4 py-2 text-left hover:bg-gray-100 text-red-600"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+  </div>
     <Container component="main" maxWidth="xs">
       
       <Box

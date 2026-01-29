@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Links, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { EyeOff, Eye } from 'lucide-react';
 
@@ -173,12 +173,13 @@ const Login = () => {
 
             {/* Forgot/Demo Buttons */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-              <button 
-                type="button" 
+             
+              <Link 
+                to={"/forgot-password"}
                 className="text-sm sm:text-base text-gray-600 hover:text-gray-800 transition-colors"
               >
                 Forgot password?
-              </button>
+              </Link>
             
             </div>
 

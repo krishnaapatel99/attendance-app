@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/api";
@@ -7,6 +8,7 @@ import { toast } from "react-toastify";
 function ChangePassword() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     newPassword: "",
@@ -43,7 +45,7 @@ function ChangePassword() {
     try {
       setLoading(true);
 
-      const res = await api.put("/student/change-password", {
+      const res = await api.post("/student/change-password", {
         newPassword,
         confirmPassword
       });

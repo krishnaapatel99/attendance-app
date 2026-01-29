@@ -1,79 +1,230 @@
-// src/App.jsx
-import { useState } from 'react';
 import './App.css';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
+
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+/* ========= AUTH PAGES ========= */
 import Login from './pages/Auth/login';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import TeacherAttendance from './pages/Teacher/TeacherAttendance';
-import TeacherHome from './pages/Teacher/TeacherHome';
-import TeacherAnnouncements from './pages/Teacher/TeacherAnnouncements';
-import TeacherTimetable from './pages/Teacher/TeacherTimetable';
-import ViewStudents from './pages/Teacher/ViewStudents';
+import EmailVerification from './pages/Auth/Email';
+import OtpVerification from './pages/Auth/otp';
+import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/resetpassword';
+
+/* ========= STUDENT ========= */
 import StudentHome from './pages/Student/StudentHome';
 import StudentAttendance from './pages/Student/StudentAttendance';
 import StudentAnnouncement from './pages/Student/StudentAnnouncement';
 import StudentTimetable from './pages/Student/StudentTimetable';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import EmailVerification from './pages/Auth/Email';
-import OtpVerification from './pages/Auth/otp';
-import ChangePassword from './pages/Student/ChangePassword'
-import ForgotPassword from './pages/Auth/ForgotPassword'
-import ResetPassword from './pages/Auth/resetpassword'
-import TeacherAdvisor from './pages/Teacher/TeacherAdvisor'
-// Protected Route Component
+import ChangePassword from './pages/Student/ChangePassword';
+
+/* ========= TEACHER ========= */
+import TeacherHome from './pages/Teacher/TeacherHome';
+import TeacherAttendance from './pages/Teacher/TeacherAttendance';
+import TeacherAnnouncements from './pages/Teacher/TeacherAnnouncements';
+import TeacherTimetable from './pages/Teacher/TeacherTimetable';
+import ViewStudents from './pages/Teacher/ViewStudents';
+import TeacherAdvisor from './pages/Teacher/TeacherAdvisor';
+
+/* ======================================================
+   PROTECTED ROUTE (ONLY GUARD IN THE APP)
+====================================================== */
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
-  
+  const location = useLocation();
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div>Checking session...</div>
+        Checking session...
       </div>
     );
   }
 
-  // Session invalid → redirect to login
+  // Not logged in
   if (!user) {
     return <Navigate to="/signin" replace />;
   }
 
-  // Role-based protection
+  // Role mismatch
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/signin" replace />;
   }
 
-  // For email verification page, only allow if email is not verified
-  if (window.location.pathname === '/email' && user.email_verified) {
-    return <Navigate to="/student" replace />;
+  // Student email verification gate
+  if (
+    user.role === 'student' &&
+    !user.email_verified &&
+    !['/email', '/otp-verification', '/change-password'].includes(
+      location.pathname
+    )
+  ) {
+    return <Navigate to="/email" replace />;
   }
 
   return children;
 };
 
-// App Routes
+/* ======================================================
+   SMART ROOT REDIRECT (/)
+====================================================== */
+const HomeRedirect = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/signin" replace />;
+
+  if (user.role === 'teacher') {
+    return <Navigate to="/teacher" replace />;
+  }
+
+  if (user.role === 'student') {
+    if (!user.email_verified) {
+      return <Navigate to="/email" replace />;
+    }
+    return <Navigate to="/student" replace />;
+  }
+
+  return <Navigate to="/signin" replace />;
+};
+
+/* ======================================================
+   ROUTES
+====================================================== */
 const AppRoutes = () => (
   <Routes>
+    {/* Root */}
+    <Route path="/" element={<HomeRedirect />} />
+
+    {/* Public / Recovery */}
     <Route path="/signin" element={<Login />} />
-    <Route path="/" element={<Navigate to="/signin" replace />} />
- <Route path="/email" element={<EmailVerification />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/otp-verification" element={<OtpVerification />} />
-    <Route path='/change-password' element={<ChangePassword/>} />
-    <Route path='/forgot-password' element={<ForgotPassword/>} />
-    <Route path='/otp/reset-password' element={<ResetPassword/>} />
-    {/* Teacher Routes */}
-    <Route path="/teacher" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherHome /></ProtectedRoute>} />
-    <Route path="/teacher/attendance" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherAttendance /></ProtectedRoute>} />
-    <Route path="/teacher/timetable" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherTimetable /></ProtectedRoute>} />
-    <Route path="/teacher/announcement" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherAnnouncements /></ProtectedRoute>} />
-    <Route path="/teacher/view-students" element={<ProtectedRoute allowedRoles={['teacher']}><ViewStudents /></ProtectedRoute>} />
-    <Route path="/teacher/advisor" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherAdvisor /></ProtectedRoute>} />
-    {/* Student Routes */}
-    <Route path="/student" element={<ProtectedRoute allowedRoles={['student']}><StudentHome /></ProtectedRoute>} />
-    <Route path="/student/attendance" element={<ProtectedRoute allowedRoles={['student']}><StudentAttendance /></ProtectedRoute>} />
-    <Route path="/student/timetable" element={<ProtectedRoute allowedRoles={['student']}><StudentTimetable /></ProtectedRoute>} />
-    <Route path="/student/announcement" element={<ProtectedRoute allowedRoles={['student']}><StudentAnnouncement /></ProtectedRoute>} />
+    <Route path="/otp/reset-password" element={<ResetPassword />} />
+
+    {/* Student onboarding */}
+    <Route
+      path="/email"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <EmailVerification />
+        </ProtectedRoute>
+      }
+    />
+
+    <Route
+      path="/change-password"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <ChangePassword />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Student */}
+    <Route
+      path="/student"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <StudentHome />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/student/attendance"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <StudentAttendance />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/student/timetable"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <StudentTimetable />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/student/announcement"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <StudentAnnouncement />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Teacher */}
+    <Route
+      path="/teacher"
+      element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <TeacherHome />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/teacher/attendance"
+      element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <TeacherAttendance />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/teacher/timetable"
+      element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <TeacherTimetable />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/teacher/announcement"
+      element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <TeacherAnnouncements />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/teacher/view-students"
+      element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <ViewStudents />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/teacher/advisor"
+      element={
+        <ProtectedRoute allowedRoles={['teacher']}>
+          <TeacherAdvisor />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Fallback */}
+    <Route path="*" element={<Navigate to="/" replace />} />
   </Routes>
 );
 
+/* ======================================================
+   APP
+====================================================== */
 function App() {
   return (
     <AuthProvider>
