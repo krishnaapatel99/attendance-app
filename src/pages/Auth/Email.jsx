@@ -76,7 +76,7 @@ const handleGoogleSignIn = () => {
     toast.success('OTP has been sent to your email');
 
     setTimeout(() => {
-      navigate('/otp-verification', { state: { email } });
+      navigate('/otp-verification', { state: { email, purpose: 'EMAIL_VERIFICATION' } });
     }, 800); // small delay so toast is visible
 
   } catch (error) {
@@ -106,7 +106,8 @@ const handleGoogleSignIn = () => {
               draggable
               pauseOnHover
             />
-<div className='px-4 py-4 md:px-8'><img src="Upashit_logo.png" alt="Upashit Logo" className="h-12 w-auto object-contain sm:h-12" /></div>
+<div className='px-4 py-4 md:px-8'>
+  <img src="Upashit_logo.png" alt="Upashit Logo" className="h-12 w-auto object-contain sm:h-12" /></div>
     <Container component="main" maxWidth="xs">
       
       <Box

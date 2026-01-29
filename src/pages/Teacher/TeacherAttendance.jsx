@@ -24,6 +24,10 @@ function Attendance() {
   const [todaySchedule, setTodaySchedule] = useState([]);
   const [submittedTimetables, setSubmittedTimetables] = useState({});
   const [loading, setLoading] = useState(true);
+  const [updateMode, setUpdateMode] = useState(false);
+  const [absentStudents, setAbsentStudents] = useState([]);
+  const [selectedForUpdate, setSelectedForUpdate] = useState([]);
+
   const navigate = useNavigate();
 
   // Fetch students and their attendance when timetable changes
@@ -191,6 +195,54 @@ const markAttendance = async (studentRollno, status) => {
     }
   }
 };
+const openUpdateModal = async () => {
+  try {
+    const res = await api.get(
+      `/teacher/absent-students?timetable_id=${selectedTimetable}&attendance_date=${today}`
+    );
+
+    if (res.data.success) {
+      setAbsentStudents(res.data.data);
+      setSelectedForUpdate([]);
+      setUpdateMode(true);
+    }
+  } catch (err) {
+    toast.error("Failed to load absent students");
+  }
+};
+const submitUpdatedAttendance = async () => {
+  if (selectedForUpdate.length === 0) {
+    toast.warning("No students selected");
+    return;
+  }
+
+  try {
+    await api.put("/teacher/update-status", {
+      timetable_id: selectedTimetable,
+      attendance_date: today,
+      present_students: selectedForUpdate
+    });
+
+    // Update main attendance table state
+    setAttendanceData(prev => {
+      const updated = { ...prev };
+      selectedForUpdate.forEach(roll => {
+        if (updated[roll]) {
+          updated[roll].status = "Present";
+        }
+      });
+      return updated;
+    });
+
+    setUpdateMode(false);
+    toast.success("Attendance updated successfully");
+
+  } catch (err) {
+    toast.error("Failed to update attendance");
+  }
+};
+
+
 
   const saveAllAttendance = async () => {
   if (submittedTimetables[selectedTimetable]) {
@@ -363,7 +415,15 @@ const markAttendance = async (studentRollno, status) => {
   className="bg-blue-600 flex items-center justify-center text-white px-4 sm:px-6 lg:px-8 py-2 lg:py-2.5 rounded-lg lg:rounded-xl hover:bg-blue-700 transition-colors active:scale-95 duration-200 cursor-pointer text-base sm:text-lg w-full sm:w-auto lg:h-[40px] lg:font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 >
   {saving ? 'Saving...' : submittedTimetables[selectedTimetable] ? 'Submitted' : 'Save '}
-</button>
+                 </button>
+                 {submittedTimetables[selectedTimetable] && (
+                  <button
+                    onClick={openUpdateModal}
+                    className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition"
+                      >Update 
+                    </button>
+                     )}
+
                 </div>
               </div>
             </div>
@@ -455,6 +515,62 @@ const markAttendance = async (studentRollno, status) => {
           </div>
         </div>
       </div>
+      {updateMode && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white w-full max-w-md rounded-xl p-6 shadow-lg">
+
+      <h2 className="text-2xl font-bold mb-4 text-center text-red-600">
+        Absent Students
+      </h2>
+
+      <div className="max-h-64 overflow-y-auto space-y-2">
+        {absentStudents.map(student => (
+          <label
+            key={student.student_rollno}
+            className="flex items-center justify-between border p-2 rounded"
+          >
+            <div>
+              <p className="font-medium">{student.student_rollno}</p>
+              <p className="text-gray-600 text-sm">{student.name}</p>
+            </div>
+
+            <input
+              type="checkbox"
+              className="w-5 h-5"
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setSelectedForUpdate(prev => [...prev, student.student_rollno]);
+                } else {
+                  setSelectedForUpdate(prev =>
+                    prev.filter(r => r !== student.student_rollno)
+                  );
+                }
+              }}
+            />
+          </label>
+        ))}
+      </div>
+
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          onClick={() => setUpdateMode(false)}
+          className="px-4 py-2 border rounded-lg"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={submitUpdatedAttendance}
+          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+        >
+          Submit
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

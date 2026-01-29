@@ -1,8 +1,10 @@
 // components/Sidebar.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "../contexts/AuthContext";
 function Sidebar({ sidebarOpen, setSidebarOpen }) {
+  const { user, loading } = useAuth();
+   const isAdvisor = user?.advisor?.isAdvisor;
   return (
     <>
       {/* Mobile overlay */}
@@ -50,6 +52,14 @@ function Sidebar({ sidebarOpen, setSidebarOpen }) {
         >
           Announcement
         </Link>
+        {isAdvisor && (
+          <Link
+            to="/teacher/advisor"
+            className="bg-[#2C397f] w-[210] font-medium hover:bg-[#192048] text-center rounded-lg text-white py-3 active:scale-95 duration-200"
+          >
+            Advisor
+          </Link>
+        )}
       </div>
     </>
   );

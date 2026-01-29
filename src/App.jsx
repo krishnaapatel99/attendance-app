@@ -15,6 +15,10 @@ import StudentTimetable from './pages/Student/StudentTimetable';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import EmailVerification from './pages/Auth/Email';
 import OtpVerification from './pages/Auth/otp';
+import ChangePassword from './pages/Student/ChangePassword'
+import ForgotPassword from './pages/Auth/ForgotPassword'
+import ResetPassword from './pages/Auth/resetpassword'
+import TeacherAdvisor from './pages/Teacher/TeacherAdvisor'
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -52,12 +56,16 @@ const AppRoutes = () => (
     <Route path="/" element={<Navigate to="/signin" replace />} />
  <Route path="/email" element={<EmailVerification />} />
     <Route path="/otp-verification" element={<OtpVerification />} />
+    <Route path='/change-password' element={<ChangePassword/>} />
+    <Route path='/forgot-password' element={<ForgotPassword/>} />
+    <Route path='/otp/reset-password' element={<ResetPassword/>} />
     {/* Teacher Routes */}
     <Route path="/teacher" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherHome /></ProtectedRoute>} />
     <Route path="/teacher/attendance" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherAttendance /></ProtectedRoute>} />
     <Route path="/teacher/timetable" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherTimetable /></ProtectedRoute>} />
     <Route path="/teacher/announcement" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherAnnouncements /></ProtectedRoute>} />
-    <Route path="/teacher/view-students" element={<ViewStudents />} />
+    <Route path="/teacher/view-students" element={<ProtectedRoute allowedRoles={['teacher']}><ViewStudents /></ProtectedRoute>} />
+    <Route path="/teacher/advisor" element={<ProtectedRoute allowedRoles={['teacher']}><TeacherAdvisor /></ProtectedRoute>} />
     {/* Student Routes */}
     <Route path="/student" element={<ProtectedRoute allowedRoles={['student']}><StudentHome /></ProtectedRoute>} />
     <Route path="/student/attendance" element={<ProtectedRoute allowedRoles={['student']}><StudentAttendance /></ProtectedRoute>} />
