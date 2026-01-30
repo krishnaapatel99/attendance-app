@@ -10,7 +10,7 @@ const EmailVerification = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const {logout } = useAuth();
+  const {logout, refreshUser } = useAuth();
 
    const handleLogout = async () => {
     await logout();
@@ -41,7 +41,7 @@ const handleGoogleSignIn = () => {
           '/verify-google-email',
           { idToken }
         );
-
+        await refreshUser();
         toast.success('Email verified successfully');
 
         setTimeout(() => {

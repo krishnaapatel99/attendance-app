@@ -17,27 +17,41 @@ function StudentAttendance() {
     useEffect(() => {
         fetchAllAttendanceData();
     }, []);
-    
-    const fetchAllAttendanceData = async () => {
-        try {
-            const [overallRes, monthlyRes, subjectWiseRes] = await Promise.all([
-                api.get('/student/attendance/overall'),
-                api.get('/student/attendance/monthly'),
-                api.get('/student/attendance/subject-wise')
-            ]);
-            
-            setAttendanceData({
-                overall: overallRes.data.success ? overallRes.data.data : null,
-                monthly: monthlyRes.data.success ? monthlyRes.data.data : [],
-                subjectWise: subjectWiseRes.data.success ? subjectWiseRes.data.data : [],
-                monthlySubjectWise: []
-            });
-        } catch (error) {
-            console.error('Error fetching attendance data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+   const fetchAllAttendanceData = async () => {
+  setLoading(true);
+
+  try {
+    const overallRes = await api.get('/student/attendance/overall');
+    const monthlyRes = await api.get('/student/attendance/monthly');
+    const subjectWiseRes = await api.get('/student/attendance/subject-wise');
+
+    setAttendanceData({
+      overall: overallRes.data.success ? overallRes.data.data : null,
+      monthly: monthlyRes.data.success ? monthlyRes.data.data : [],
+      subjectWise: subjectWiseRes.data.success ? subjectWiseRes.data.data : [],
+      monthlySubjectWise: []
+    });
+  } catch (error) {
+    console.error('Error fetching attendance data:', error);
+    if (error.response?.status === 401) {
+      // Auth error will be handled by interceptor
+      console.warn("Unauthorized while fetching attendance");
+    } else {
+      // Set default data to prevent infinite loading
+      setAttendanceData({
+        overall: null,
+        monthly: [],
+        subjectWise: [],
+        monthlySubjectWise: []
+      });
+      // Show user-friendly error
+      alert('Unable to load attendance data. Please check your connection and try again.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
     
     const getAttendanceStatus = (percentage) => {
         if (percentage >= 85) return { label: 'Excellent', color: 'bg-green-600', text_color: 'text-green-600' };

@@ -3,12 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import api from '../../utils/api';
 import 'react-toastify/dist/ReactToastify.css';
+import {useAuth} from '../../contexts/AuthContext';
 
 const OtpVerification = () => {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [resendDisabled, setResendDisabled] = useState(false);
   const [countdown, setCountdown] = useState(30);
+const { refreshUser } = useAuth();
 
   const inputRefs = useRef([]);
   const navigate = useNavigate();
@@ -105,7 +107,7 @@ const OtpVerification = () => {
           email,
           otp: otpCode
         });
-
+        await refreshUser();
         toast.success('Email verified successfully');
         setTimeout(() => navigate('/change-password'), 1200);
       }
@@ -117,6 +119,7 @@ const OtpVerification = () => {
           otp: otpCode
         });
 
+       
         toast.success('OTP verified');
 
         navigate('/otp/reset-password', {

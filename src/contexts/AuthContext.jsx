@@ -39,6 +39,16 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+const refreshUser = async () => {
+  try {
+    const res = await api.get("/auth/validateUser");
+    if (res.data?.success) {
+      setUser(res.data.user);
+    }
+  } catch (err) {
+    console.warn("refreshUser failed");
+  }
+};
 
   // =========================
   // Login
@@ -90,6 +100,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        refreshUser,
       }}
     >
       {children}
