@@ -1,205 +1,207 @@
 import React, { useState, useEffect } from "react";
-import { Link, Links, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { EyeOff, Eye } from 'lucide-react';
+import { EyeOff, Eye, Mail, Lock } from 'lucide-react';
 
 const Login = () => {
   const [activeTab, setActiveTab] = useState('student');
-  const [showPassword, setShowPassword]= useState(false)
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
   const { login } = useAuth();
   const navigate = useNavigate();
 
- 
+  const tabContent = {
+    student: {
+      image: "https://illustrations.popsy.co/blue/studying.svg",
+      title: "Student Portal",
+      desc: "Access your assignments and join live classes."
+    },
+    teacher: {
+      image: "https://illustrations.popsy.co/blue/presentation.svg",
+      title: "Instructor Hub",
+      desc: "Manage your classroom and track student progress."
+    }
+  };
+
   useEffect(() => {
-    setFormData({
-        email: '',
-        password: ''
-    });
+    setFormData({ email: '', password: '' });
     setError('');
   }, [activeTab]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     try {
-
-      const result = await login(formData.email, formData.password, activeTab );
-      
+      const result = await login(formData.email, formData.password, activeTab);
       if (result.success) {
-        
-        if (result.user.role === 'teacher') {
-          navigate('/teacher');
-        } else if (result.user.role === 'student') {
-          if(!result.user.email_verified) {
-            navigate('/email');
-          } else {
-            navigate('/student');
-          }
-        } else {
-     
-            setError('Login successful, but user role is unknown.');
-            setLoading(false);
+        if (result.user.role === 'teacher') navigate('/teacher');
+        else if (result.user.role === 'student') {
+          result.user.email_verified ? navigate('/student') : navigate('/email');
         }
       } else {
         setError(result.message || 'Login failed');
       }
     } catch (error) {
-      setError('An unexpected error occurred during login. Please try again.');
-      console.error('Login error:', error);
+      setError('An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
   };
 
-
-
   return (
-    <div className="min-h-screen bg-gray-200 flex flex-col">
-        {/* Logo container for responsiveness */}
-        <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
-            <img 
-                src="Upashit_logo.png" 
-                alt="Upasthit Logo" 
-                className="h-10 w-auto object-contain sm:h-12"
-            />
-        </div>
+    <div className="h-screen md:min-h-screen flex items-center justify-center font-sans bg-white md:p-4 md:bg-[linear-gradient(to_right,#60a5fa_50%,#ffffff_50%)] overflow-hidden">
       
-      <div className="flex-1 flex items-center justify-center p-4">
-        {/* Responsive adjustments: max-w-sm on mobile, max-w-lg on larger screens, reduced vertical padding on mobile */}
-        <div className="w-full max-w-sm sm:max-w-lg bg-white rounded-2xl shadow-[6px_6px_20px_rgba(0,0,0,0.55)] p-6 sm:p-8">
-          
-          {/* Welcome Text */}
-          <h1 className="text-xl font-semibold text-center text-gray-800 mb-6 sm:text-2xl sm:mb-8">
-            Welcome to Upasthit
-          </h1>
+      <div className="flex flex-col md:flex-row w-full max-w-5xl bg-white md:rounded-[2.5rem] overflow-hidden md:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] md:border md:border-gray-100 h-full md:h-auto">
+        
+        {/* MOBILE HEADER */}
+        <div className="md:hidden w-full h-[32%] relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 flex items-center justify-center">
+          <div className="relative z-10 flex flex-col items-center">
+            <img
+              src="Upashit_logo.png"
+              alt="Logo"
+              className="h-14 brightness-0 invert mb-1"
+            />
+            <p className="text-blue-100 text-[10px] font-medium tracking-[0.25em] uppercase opacity-80">
+              Experience Excellence
+            </p>
+          </div>
 
-          {/* Toggle Buttons: Use flex-col on small screens for stacking, then flex-row on medium screens and up */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6 sm:mb-8">
+          <svg
+            className="absolute bottom-0 left-0 w-full block"
+            viewBox="0 0 1440 90"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,40 C240,90 480,90 720,70 960,50 1200,20 1440,30 L1440,0 L0,0 Z"
+              fill="#ffffff"
+            />
+          </svg>
+        </div>
+
+        {/* DESKTOP LEFT SECTION */}
+        <div className="hidden md:flex md:w-1/2 bg-blue-400 p-12 flex-col items-center justify-center relative transition-colors duration-500">
+          <div className="text-center">
+            <div className="h-64 flex items-center justify-center mb-8">
+                <img src={tabContent[activeTab].image} alt="Study" className="w-full max-w-sm scale-110" key={activeTab} />
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">{tabContent[activeTab].title}</h2>
+            <p className="text-blue-50 opacity-90 text-lg max-w-xs mx-auto">{tabContent[activeTab].desc}</p>
+          </div>
+        </div>
+
+        {/* FORM SECTION */}
+        <div className="w-full h-[68%] md:h-auto md:w-1/2 p-8 md:p-20 flex flex-col justify-start md:justify-center bg-white overflow-y-auto">
+          
+          <div className="flex flex-col items-center mb-6 md:mb-8">
+            <img src="Upashit_logo.png" alt="Logo" className="hidden md:block h-12 mb-2" />
+            <h2 className="text-sm md:text-2xl font-semibold text-gray-400">Welcome back to Upasthit</h2>
+          </div>
+
+          {/* ROLE TABS WITH MOBILE IMAGES */}
+          <div className="flex p-1 bg-gray-50 rounded-2xl mb-8 border border-gray-100 shadow-sm">
             <button
               onClick={() => setActiveTab('teacher')}
-              className={`flex-1 px-4 py-2 sm:px-8 sm:py-3 rounded-full text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
-                activeTab === 'teacher'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-green-300 text-white hover:bg-green-400'
+              className={`flex-1 py-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${
+                activeTab === 'teacher' ? 'bg-white shadow-md' : 'opacity-50 grayscale'
               }`}
             >
-              Teacher Login
+              <img 
+                src="./Screenshot 2026-02-01 042434.png" 
+                alt="Teacher" 
+                className="md:hidden h-10 w-auto object-contain"
+              />
+              <span className={`text-[10px] md:text-xs font-bold tracking-widest ${
+                activeTab === 'teacher' ? 'text-blue-600' : 'text-gray-400'
+              }`}>
+                TEACHER
+              </span>
             </button>
+
             <button
               onClick={() => setActiveTab('student')}
-              className={`flex-1 px-4 py-2 sm:px-8 sm:py-3 rounded-full text-sm sm:text-base font-medium transition-colors whitespace-nowrap ${
-                activeTab === 'student'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-green-300 text-white hover:bg-green-400'
+              className={`flex-1 py-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${
+                activeTab === 'student' ? 'bg-white shadow-md' : 'opacity-50 grayscale'
               }`}
             >
-              Student Login
+              <img 
+                src="./Screenshot 2026-02-01 041955.png" 
+                alt="Student" 
+                className="md:hidden h-10 w-auto object-contain"
+              />
+              <span className={`text-[10px] md:text-xs font-bold tracking-widest ${
+                activeTab === 'student' ? 'text-blue-600' : 'text-gray-400'
+              }`}>
+                STUDENT
+              </span>
             </button>
           </div>
 
-          {/* Login Heading */}
-          <h2 className="text-xl font-bold text-center text-gray-800 mb-5 sm:text-2xl sm:mb-6">
-            Login as a {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-          </h2>
-
-          {/* Form */}
-          <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
+          <form className="space-y-5 md:space-y-8" onSubmit={handleSubmit}>
             {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md text-sm sm:text-base">
+              <div className="text-red-500 text-[10px] text-center bg-red-50 py-2 rounded-xl border border-red-100">
                 {error}
               </div>
             )}
-            
-            {/* Email Input */}
-           <div>
-            <label className="block text-sm sm:text-base font-bold text-gray-700 mb-2">
-             {activeTab === 'student' ? 'Roll Number' : 'Email Address'}
-            </label>
-            <input
-                 type={activeTab === 'student' ? 'text' : 'email'}
-                 name="email"
-                 value={formData.email}
-                 onChange={handleInputChange}
-                 className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                 required
-            />
-           </div>
 
-            {/* Password Input */}
-            <div className="relative">
-              <label className="block text-sm sm:text-base font-bold text-gray-700 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full  px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                  required
-                />
-                <button
-                  type="button"
-                  className="absolute right-2 top-2"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? (
-                    <Eye size={22} className="text-gray-500" />
-                  ) : (
-                    <EyeOff size={22} className="text-gray-500" />
-                  )}
-                </button>
-              </div>
-             
+            <div className="space-y-1">
+                <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest ml-1">
+                    {activeTab === 'student' ? 'Roll Number' : 'Email Address'}
+                </label>
+                <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus-within:border-blue-500 shadow-sm transition-all">
+                    <Mail size={18} className="text-gray-300 mr-3" />
+                    <input
+                        type={activeTab === 'student' ? 'text' : 'email'}
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full outline-none bg-transparent text-gray-700 text-sm md:text-base"
+                        placeholder={activeTab === 'student' ? "Enter your roll no." : "example@mail.com"}
+                        required
+                    />
+                </div>
             </div>
 
-            {/* Forgot/Demo Buttons */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-             
-              <Link 
-                to={"/forgot-password"}
-                className="text-sm sm:text-base text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            
+            <div className="space-y-1">
+                <label className="text-[10px] font-black text-blue-500 uppercase tracking-widest ml-1">Password</label>
+                <div className="flex items-center bg-white border border-gray-200 rounded-2xl px-4 py-3.5 focus-within:border-blue-500 shadow-sm transition-all">
+                    <Lock size={18} className="text-gray-300 mr-3" />
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        className="w-full outline-none bg-transparent text-gray-700 text-sm md:text-base"
+                        placeholder="••••••••"
+                        required
+                    />
+                    <button type="button" className="text-gray-300 ml-2" onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                    </button>
+                </div>
+                <div className="text-right mt-1">
+                    <Link to="/forgot-password" size="sm" className="text-[10px] md:text-xs font-bold text-gray-400 hover:text-blue-500 transition-colors">
+                        Forgot password?
+                    </Link>
+                </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-center pt-3">
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full sm:w-auto px-10 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-              >
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-            </div>
-
-            {/* Contact Admin Link */}
-            <div className="text-center pt-3">
-              <button type="button" className="text-sm sm:text-base text-gray-600 hover:text-gray-800 underline transition-colors">
-                No account? Contact admin
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-[#1a1a1a] text-white rounded-2xl font-bold tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-2 active:scale-95 disabled:bg-gray-300"
+            >
+              {loading ? 'Logging in...' : 'LOGIN NOW'}
+              {!loading && <span className="text-lg">→</span>}
+            </button>
           </form>
         </div>
       </div>
