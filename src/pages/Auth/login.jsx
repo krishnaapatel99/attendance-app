@@ -63,28 +63,18 @@ const Login = () => {
       <div className="flex flex-col md:flex-row w-full max-w-5xl bg-white md:rounded-[2.5rem] overflow-hidden md:shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] md:border md:border-gray-100 h-full md:h-auto">
         
         {/* MOBILE HEADER */}
-        <div className="md:hidden w-full h-[32%] relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 flex items-center justify-center">
+        <div className="md:hidden w-full h-[35%] relative overflow-hidden  bg-blue-600 flex items-center justify-center">
           <div className="relative z-10 flex flex-col items-center">
             <img
-              src="Upashit_logo.png"
+              src="duplicate.png"
               alt="Logo"
-              className="h-14 brightness-0 invert mb-1"
+              className="h-[400px] object-contain w-full"
             />
-            <p className="text-blue-100 text-[10px] font-medium tracking-[0.25em] uppercase opacity-80">
-              Experience Excellence
-            </p>
+             
+
           </div>
 
-          <svg
-            className="absolute bottom-0 left-0 w-full block"
-            viewBox="0 0 1440 90"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0,40 C240,90 480,90 720,70 960,50 1200,20 1440,30 L1440,0 L0,0 Z"
-              fill="#ffffff"
-            />
-          </svg>
+          
         </div>
 
         {/* DESKTOP LEFT SECTION */}
@@ -101,13 +91,13 @@ const Login = () => {
         {/* FORM SECTION */}
         <div className="w-full h-[68%] md:h-auto md:w-1/2 p-8 md:p-20 flex flex-col justify-start md:justify-center bg-white overflow-y-auto">
           
-          <div className="flex flex-col items-center mb-6 md:mb-8">
+          <div className="flex flex-col items-center mb-0 md:mb-8">
             <img src="Upashit_logo.png" alt="Logo" className="hidden md:block h-12 mb-2" />
-            <h2 className="text-sm md:text-2xl font-semibold text-gray-400">Welcome back to Upasthit</h2>
+            <h2 className="hidden md:block text-sm md:text-2xl font-semibold text-gray-400">Welcome back to Upasthit</h2>
           </div>
 
           {/* ROLE TABS WITH MOBILE IMAGES */}
-          <div className="flex p-1 bg-gray-50 rounded-2xl mb-8 border border-gray-100 shadow-sm">
+          <div className="flex p-1 bg-gray-50 rounded-2xl mb-0 md:mb-8 border border-gray-100 shadow-sm">
             <button
               onClick={() => setActiveTab('teacher')}
               className={`flex-1 py-3 rounded-xl transition-all flex flex-col items-center justify-center gap-1 ${
