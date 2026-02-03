@@ -1,4 +1,5 @@
 import axios from "axios";
+import { offlineSyncManager, isOnline } from "./offlineSync";
 
 // ============================
 // AXIOS INSTANCE
@@ -15,6 +16,32 @@ const api = axios.create({
 });
 
 // ============================
+// OFFLINE QUEUE INTERCEPTOR
+// ============================
+api.interceptors.request.use(
+  async (config) => {
+    // Queue non-GET requests when offline
+    if (!isOnline() && config.method !== 'get') {
+      await offlineSyncManager.addPendingRequest(
+        config.url,
+        config.method,
+        config.headers,
+        JSON.stringify(config.data)
+      );
+      
+      return Promise.reject({
+        isOffline: true,
+        message: 'Request queued for when you\'re back online',
+        config
+      });
+    }
+    
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// ============================
 // DEV REQUEST LOGGING
 // ============================
 if (import.meta.env.DEV) {
@@ -26,6 +53,18 @@ if (import.meta.env.DEV) {
     (error) => Promise.reject(error)
   );
 }
+
+// ============================
+// SYNC ON RECONNECT
+// ============================
+window.addEventListener('online', async () => {
+  try {
+    await offlineSyncManager.syncPendingRequests(api);
+    console.log('✅ Synced pending requests');
+  } catch (error) {
+    console.error('Failed to sync:', error);
+  }
+});
 
 // ============================
 // REFRESH QUEUE

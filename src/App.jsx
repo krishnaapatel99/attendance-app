@@ -18,9 +18,16 @@ import StudentTimetable from './pages/Student/StudentTimetable';
 import ChangePassword from './pages/Student/ChangePassword';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import NetworkStatus from './components/NetworkStatus';
+import ConflictResolver from './components/ConflictResolver';
 
 import { useLocation } from "react-router-dom";
+
+// Import testing utility in development
+if (import.meta.env.DEV) {
+  import('./utils/offlineTest');
+}
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -241,6 +248,9 @@ function App() {
     <AuthProvider>
       <Router>
         <AppRoutes />
+        <PWAInstallPrompt />
+        <NetworkStatus />
+        <ConflictResolver />
       </Router>
     </AuthProvider>
   );
