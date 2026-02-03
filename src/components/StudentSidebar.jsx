@@ -65,6 +65,12 @@ function StudentSidebar({ sidebarOpen, setSidebarOpen }) {
         >
           Announcement
         </Link>
+        <Link
+          to="/student/chatbot"
+          className="bg-[#2C397f] w-full font-medium hover:bg-[#192048] text-center rounded-lg text-white py-3 active:scale-95 duration-200"
+        >
+          AI Assistant
+        </Link>
       </div>
     </>
   );
