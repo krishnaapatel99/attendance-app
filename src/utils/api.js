@@ -7,7 +7,7 @@ import { offlineSyncManager, isOnline } from "./offlineSync";
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
-    "https://api.upasthit.in/api",
+    "https://attendance-app-backend-jdny.onrender.com/api",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
