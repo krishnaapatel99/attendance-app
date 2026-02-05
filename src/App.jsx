@@ -16,11 +16,13 @@ import StudentAttendance from './pages/Student/StudentAttendance';
 import StudentAnnouncement from './pages/Student/StudentAnnouncement';
 import StudentTimetable from './pages/Student/StudentTimetable';
 import ChangePassword from './pages/Student/ChangePassword';
+import LandingPage from './components/LandingPage';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 
 import { useLocation } from "react-router-dom";
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -113,6 +115,7 @@ const AppRoutes = () => (
   <Routes>
     {/* Landing */}
     <Route path="/" element={<LandingRedirect />} />
+    <Route path='/Landing' element={<LandingPage/>}/>
 
     {/* Auth */}
     <Route
