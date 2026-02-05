@@ -17,12 +17,20 @@ import StudentAnnouncement from './pages/Student/StudentAnnouncement';
 import StudentTimetable from './pages/Student/StudentTimetable';
 import ChangePassword from './pages/Student/ChangePassword';
 import LandingPage from './components/LandingPage';
+import Chatbot from './pages/Student/Chatbot';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
+import NetworkStatus from './components/NetworkStatus';
+import ConflictResolver from './components/ConflictResolver';
 
 import { useLocation } from "react-router-dom";
 
+// Import testing utility in development
+if (import.meta.env.DEV) {
+  import('./utils/offlineTest');
+}
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -224,6 +232,14 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/student/chatbot"
+      element={
+        <ProtectedRoute allowedRoles={['student']}>
+          <Chatbot />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/change-password"
       element={
         <ProtectedRoute allowedRoles={['student']}>
@@ -244,6 +260,10 @@ function App() {
     <AuthProvider>
       <Router>
         <AppRoutes />
+        <PWAInstallPrompt />
+        <PWAUpdatePrompt />
+        <NetworkStatus />
+        <ConflictResolver />
       </Router>
     </AuthProvider>
   );
