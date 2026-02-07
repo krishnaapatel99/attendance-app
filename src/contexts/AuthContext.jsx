@@ -1,6 +1,7 @@
 // src/contexts/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from "react";
 import api from "../utils/api";
+import { clearCsrfToken } from "../utils/csrf";
 
 const AuthContext = createContext(null);
 
@@ -83,15 +84,15 @@ const refreshUser = async () => {
   // Logout
   // =========================
   const logout = async () => {
-    try {
-      await api.post("/auth/signOut");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      setUser(null);
-      // Let router handle redirect
-    }
-  };
+  try {
+    await api.post("/auth/signOut");
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    clearCsrfToken(); 
+    setUser(null);
+  }
+};
 
   return (
     <AuthContext.Provider

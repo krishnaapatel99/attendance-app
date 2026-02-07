@@ -1,9 +1,8 @@
 import axios from "axios";
 import { offlineSyncManager, isOnline } from "./offlineSync";
+import { getCsrfToken } from "./csrf";
 
-// ============================
-// AXIOS INSTANCE
-// ============================
+
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_URL ||
@@ -14,6 +13,19 @@ const api = axios.create({
   },
   timeout: 20000,
 });
+
+api.interceptors.request.use(
+  async (config) => {
+    // Only for state-changing requests
+    if (["post", "put", "patch", "delete"].includes(config.method)) {
+      const token = await getCsrfToken();
+      config.headers["x-csrf-token"] = token;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 
 // ============================
 // OFFLINE QUEUE INTERCEPTOR
