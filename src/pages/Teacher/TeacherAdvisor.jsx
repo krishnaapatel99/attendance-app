@@ -23,6 +23,11 @@ function TeacherAdvisor() {
 const [lectureData, setLectureData] = useState([]);
 const [selectedStudent, setSelectedStudent] = useState(null);
 const [updating, setUpdating] = useState(false);
+const [reportMonth, setReportMonth] = useState(new Date().getMonth() + 1);
+const [reportFormat, setReportFormat] = useState("pdf");
+const [downloading, setDownloading] = useState(false);
+const [showReportModal, setShowReportModal] = useState(false);
+
 
 
   /* ================= FETCH DATA ================= */
@@ -45,6 +50,51 @@ const [updating, setUpdating] = useState(false);
 
     fetchAdvisorStudents();
   }, []);
+  const handleDownloadReport = async (type) => {
+  try {
+    setDownloading(true);
+
+    const academicYear = "2025-26";
+
+    let params = {
+      type,
+      academic_year: academicYear,
+      format: reportFormat,
+    };
+
+    if (type === "monthly") {
+      params.month = reportMonth;
+    }
+
+    const res = await api.get("/teacher/download-report", {
+      params,
+      responseType: "blob",
+    });
+
+    const fileExtension = reportFormat === "pdf" ? "pdf" : "xlsx";
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `${type}-attendance-report.${fileExtension}`
+    );
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    toast.success("Report downloaded successfully");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to download report");
+  } finally {
+    setDownloading(false);
+  }
+};
+
   const handleFetchLectures = async () => {
   if (!selectedDate || !updateText) {
     toast.warning("Please enter date and roll number");
@@ -205,6 +255,12 @@ const handleUpdateLecture = async (lecture) => {
                     className="bg-blue-600 flex items-center justify-center text-white px-4 sm:px-6 lg:px-8 py-2 lg:py-2.5 rounded-lg lg:rounded-xl hover:bg-blue-700 transition-colors active:scale-95 duration-200 cursor-pointer text-base sm:text-lg w-full sm:w-auto lg:h-[40px] lg:font-medium"
                   >
                     Update
+                  </button>
+                    <button 
+                    onClick={() => setShowReportModal(true)}
+                    className="bg-blue-600 flex items-center justify-center text-white px-4 sm:px-6 lg:px-8 py-2 lg:py-2.5 rounded-lg lg:rounded-xl hover:bg-blue-700 transition-colors active:scale-95 duration-200 cursor-pointer text-base sm:text-lg w-full sm:w-auto lg:h-[40px] lg:font-medium"
+                  >
+                    Download Report
                   </button>
                 </div>
               </div>
@@ -465,6 +521,86 @@ const handleUpdateLecture = async (lecture) => {
     </div>
   </div>
 )}
+
+  {/* REPORT MODAL */}
+  {showReportModal && (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white w-full max-w-2xl rounded-xl shadow-lg p-6">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Download Report
+          </h2>
+          <button
+            onClick={() => setShowReportModal(false)}
+            className="text-gray-500 hover:text-black text-2xl"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* REPORT SECTION */}
+        <div className="bg-gray-50 border rounded-xl p-4 mt-4 flex flex-col lg:flex-row lg:items-end gap-4">
+
+          {/* Month Selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Month
+            </label>
+            <select
+              value={reportMonth}
+              onChange={(e) => setReportMonth(Number(e.target.value))}
+              className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {Array.from({ length: 12 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {new Date(0, i).toLocaleString("default", { month: "long" })}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Format Selector */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Format
+            </label>
+            <select
+              value={reportFormat}
+              onChange={(e) => setReportFormat(e.target.value)}
+              className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="pdf">PDF</option>
+              <option value="excel">Excel</option>
+            </select>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3">
+            <button
+              disabled={downloading}
+              onClick={() => handleDownloadReport("monthly")}
+              className={`px-5 py-2 rounded-lg text-white font-medium transition
+                ${downloading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
+            >
+              {downloading ? "Downloading..." : "Download Monthly"}
+            </button>
+
+            <button
+              disabled={downloading}
+              onClick={() => handleDownloadReport("overall")}
+              className={`px-5 py-2 rounded-lg text-white font-medium transition
+                ${downloading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
+            >
+              {downloading ? "Downloading..." : "Download Overall"}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )}
 
       </div>
     </div>
