@@ -91,9 +91,9 @@ function StudentHome() {
                         >
                             <BarChart3 size={24} className="text-blue-600 flex-shrink-0" />
                             <div>
-                                <span className="text-xl sm:text-2xl text-gray-800 font-semibold block">View Attendance</span>
+                                <span className="text-xl sm:text-2xl text-gray-800 font-semibold block">Overall Attendance</span>
                                 <span className="text-gray-600 text-sm sm:text-lg">
-                                    {attendanceStats ? `${attendanceStats.attendance_percentage || 0}% Overall` : 'Loading...'}
+                                    {attendanceStats ? `${attendanceStats.overall_percentage || 0}% Overall` : 'Loading...'}
                                 </span>
                             </div>
                         </Link>
