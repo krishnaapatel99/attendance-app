@@ -21,9 +21,11 @@ function StudentAttendance() {
   setLoading(true);
 
   try {
-    const overallRes = await api.get('/student/attendance/overall');
-    const monthlyRes = await api.get('/student/attendance/monthly');
-    const subjectWiseRes = await api.get('/student/attendance/subject-wise');
+    const academicYear = "2025-26"; // Static for now
+    
+    const overallRes = await api.get(`/student/attendance/overall?academic_year=${academicYear}`);
+    const monthlyRes = await api.get(`/student/attendance/monthly?academic_year=${academicYear}`);
+    const subjectWiseRes = await api.get(`/student/attendance/subject-wise?academic_year=${academicYear}`);
 
     setAttendanceData({
       overall: overallRes.data.success ? overallRes.data.data : null,
@@ -71,7 +73,7 @@ function StudentAttendance() {
         const overall = attendanceData.overall;
         if (!overall) return <div className="p-4">No attendance data available</div>;
         
-        const percentage = overall.attendance_percentage || 0;
+        const percentage = overall.overall_percentage || 0;
         const status = getAttendanceStatus(percentage);
         
         return (
@@ -81,8 +83,8 @@ function StudentAttendance() {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                         <h2 className="text-xl sm:text-2xl font-bold text-black mb-2 sm:mb-0">Overall Attendance</h2>
                         <div className="text-left sm:text-right">
-                            <p className="text-sm text-gray-500">Total Classes</p>
-                            <p className="text-lg sm:text-xl font-semibold text-black">{overall.total_classes || 0}</p>
+                            <p className="text-sm text-gray-500">Overall Percentage</p>
+                            <p className="text-lg sm:text-xl font-semibold text-black">{percentage}%</p>
                         </div>
                     </div>
                     <p className='text-sm sm:text-lg text-gray-600'>Your complete attendance summary</p>
@@ -104,7 +106,7 @@ function StudentAttendance() {
                     ></div>
                 </div>
                 <p className='pt-3 sm:pt-4 text-gray-600 text-xs sm:text-sm'>
-                    {overall.total_present || 0} out of {overall.total_classes || 0} classes attended
+                    Overall attendance across all subjects
                 </p>
             </div>
         );
@@ -119,14 +121,15 @@ function StudentAttendance() {
                 ) : (
                     <div className="space-y-3 sm:space-y-4">
                         {attendanceData.monthly.map((month, index) => {
-                            const percentage = month.attendance_percentage || 0;
+                            const percentage = month.monthly_percentage || 0;
                             const status = getAttendanceStatus(percentage);
+                            const monthName = new Date(0, month.month - 1).toLocaleString("default", { month: "long" });
                             return (
                                 <div key={index} className="flex items-center justify-between p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
                                     <div>
-                                        <h3 className="font-semibold text-base sm:text-lg">{month.month}</h3>
+                                        <h3 className="font-semibold text-base sm:text-lg">{monthName}</h3>
                                         <p className="text-xs sm:text-sm text-gray-600">
-                                            {month.present_classes} of {month.total_classes} classes attended
+                                            {month.present_lectures || 0} of {month.total_lectures || 0} classes attended
                                         </p>
                                     </div>
                                     <div className="text-right flex items-center gap-4">
@@ -160,7 +163,7 @@ function StudentAttendance() {
                                     <div className="mb-2 sm:mb-0">
                                         <h3 className="font-semibold text-base sm:text-lg">{subject.subject_name}</h3>
                                         <p className="text-xs sm:text-sm text-gray-600">
-                                            {subject.present_classes} of {subject.total_classes} classes attended
+                                            {subject.present_lectures || 0} of {subject.total_lectures || 0} classes attended
                                         </p>
                                     </div>
                                     <div className="text-left sm:text-right w-full sm:w-auto">
