@@ -12,6 +12,11 @@ function StudentHome() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [attendanceStats, setAttendanceStats] = useState(null);
     const [loading, setLoading] = useState(true);
+     const [attendanceData, setAttendanceData] = useState({
+          
+            monthly: [],
+           
+        });
     const { user } = useAuth();
     
     // Date formatting logic
@@ -27,10 +32,15 @@ function StudentHome() {
     
     const fetchAttendanceStats = async () => {
         try {
+            const academicYear = "2025-26";
             // NOTE: Replace with your actual API endpoint if different
-            const response = await api.get('/student/attendance/overall');
+            const response = await api.get(`/student/attendance/overall?academic_year=${academicYear}`);
+            const monthlyRes = await api.get(`/student/attendance/monthly?academic_year=${academicYear}`);
             if (response.data.success) {
                 setAttendanceStats(response.data.data);
+                 setAttendanceData({
+      monthly: monthlyRes.data.success ? monthlyRes.data.data : [],
+    });
             }
         } catch (error) {
             console.error('Error fetching attendance stats:', error);
@@ -97,7 +107,12 @@ function StudentHome() {
                             <div>
                                 <span className="text-xl sm:text-2xl text-gray-800 font-semibold block">Classes Attended</span>
                                 <span className="text-gray-600 text-sm sm:text-lg">
-                                    {attendanceStats ? `${attendanceStats.total_present || 0} of ${attendanceStats.total_classes || 0} classes` : 'Loading...'}
+                                    {attendanceData.monthly.length > 0 ? (() => {
+                                        const currentMonthData = attendanceData.monthly.find(m => m.month === new Date().getMonth() + 1);
+                                        return currentMonthData 
+                                            ? `${currentMonthData.present_lectures || 0} of ${currentMonthData.total_lectures || 0} lectures this month`
+                                            : 'No current month data';
+                                    })() : 'Loading...'}
                                 </span>
                             </div>
                         </Link>
