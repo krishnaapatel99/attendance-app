@@ -103,7 +103,7 @@ const { refreshUser } = useAuth();
       setIsLoading(true);
 
       if (purpose === 'EMAIL_VERIFICATION') {
-        await api.post('/otp/verify-otp', {
+        await api.post('/student/verify-otp', {
           email,
           otp: otpCode
         });
