@@ -321,7 +321,7 @@ const handleUpdateLecture = async (lecture) => {
 
                 <tbody>
                   {filteredStudents.map((student) => {
-                    const isLow = student.percentage < 75;
+                    const isLow = student.overallPercentage < 75;
 
                     return (
                       <React.Fragment key={student.rollNo}>
@@ -341,7 +341,7 @@ const handleUpdateLecture = async (lecture) => {
                                   : "bg-green-500 border-green-600 text-white"
                               }`}
                             >
-                              {student.percentage}%
+                              {student.overallPercentage}%
                             </div>
                           </td>
                         </tr>
@@ -364,13 +364,13 @@ const handleUpdateLecture = async (lecture) => {
                                     Current Month Summary
                                   </h4>
                                   <div className="flex gap-6 text-sm">
-                                    <span>Total: {student.totalLectures}</span>
+                                    <span>Total: {student.totalLecturesCurrentMonth}</span>
                                     <span className="text-green-600">
-                                      Present: {student.present}
+                                      Present: {student.currentMonthPercentage > 0 ? Math.round((student.currentMonthPercentage * student.totalLecturesCurrentMonth) / 100) : 0}
                                     </span>
                                     <span className="text-red-600">
-                                      Absent:{" "}
-                                      {student.totalLectures - student.present}
+                                      Absent: {" "}
+                                      {student.totalLecturesCurrentMonth - (student.currentMonthPercentage > 0 ? Math.round((student.currentMonthPercentage * student.totalLecturesCurrentMonth) / 100) : 0)}
                                     </span>
                                   </div>
                                 </div>
@@ -388,12 +388,7 @@ const handleUpdateLecture = async (lecture) => {
                                   ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                       {student.subjects.map((sub) => {
-                                        const percent =
-                                          sub.total > 0
-                                            ? Math.round(
-                                                (sub.present / sub.total) * 100
-                                              )
-                                            : 0;
+                                        const percent = sub.percentage;
 
                                         const lowSub = percent < 75;
 
