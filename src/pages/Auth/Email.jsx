@@ -79,7 +79,7 @@ const handleGoogleSignIn = () => {
   try {
     setIsLoading(true);
 
-    const response = await api.post('/otp/send-otp', { email });
+    const response = await api.post('/student/send-otp', { email });
 
     toast.success('OTP has been sent to your email');
 

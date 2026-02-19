@@ -151,7 +151,7 @@ const { refreshUser } = useAuth();
       setResendDisabled(true);
 
       if (purpose === 'EMAIL_VERIFICATION') {
-        await api.post('/otp/resend-otp', { email });
+        await api.post('/student/resend-otp', { email });
       }
 
       if (purpose === 'FORGOT_PASSWORD') {
