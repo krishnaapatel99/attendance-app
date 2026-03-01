@@ -12,7 +12,7 @@ function Attendance() {
   const month = now.toLocaleString("default", { month: "long" });
   const day = now.toLocaleString("default", { weekday: "long" });
   const year = now.getFullYear();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA'); // Uses local timezone (YYYY-MM-DD format)
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [students, setStudents] = useState([]);
